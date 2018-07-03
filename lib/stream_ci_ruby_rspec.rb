@@ -1,0 +1,1 @@
+require 'stream_ci_ruby_rspec/version'
