@@ -1,4 +1,4 @@
-# StreamCiRubyRspec
+# StreamCi::Ruby::Rspec
 
 ## Installation
 
