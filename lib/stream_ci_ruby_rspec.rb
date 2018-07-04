@@ -1,3 +1,4 @@
+require 'rake/testtask'
 require 'stream_ci/ruby/rspec/version'
 
 # require 'stream_ci_ruby_rspec/version'

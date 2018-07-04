@@ -3,6 +3,7 @@ PATH
   specs:
     stream-ci-ruby-rspec (0.2.0)
       httparty (~> 0.16.2)
+      rake (~> 12.3, >= 12.3.1)
       rspec (~> 3.7)
 
 GEM

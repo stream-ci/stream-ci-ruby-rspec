@@ -22,6 +22,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'rspec', '~> 3.7'
   spec.add_runtime_dependency 'httparty', '~> 0.16.2'
+  spec.add_runtime_dependency 'rake', '~> 12.3', '>= 12.3.1'
 
   spec.add_development_dependency 'bundler', '~> 1.16', '>= 1.16.2'
   spec.add_development_dependency 'rake', '~> 12.3', '>= 12.3.1'
