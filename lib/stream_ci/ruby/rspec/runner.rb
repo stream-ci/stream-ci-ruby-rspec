@@ -10,6 +10,14 @@ module StreamCi
           @configuration.output_stream = out if @configuration.output_stream == $stdout
           @options.configure(@configuration)
 
+          root_path = StreamCi::Ruby::Rspec.root
+          test_manifest = Dir["#{root_path}/**/*_spec.rb"].map do |fp|
+            fp.gsub("#{root_path}/", '')
+          end
+
+          opts = { query: { api_key: '12345', branch: 'test', build: '1', test_manifest: test_manifest } }
+          HTTParty.post('https://api.streamci.com/v1/tests/next', opts)
+
           # TODO
           # * What do these commands do / mean?
           #
@@ -27,22 +35,19 @@ module StreamCi
 
               @no_failures = true
 
-              #
-              # until the return status code is 204, keep pulling data
-              #
+              opts = { query: { api_key: '12345', branch: 'test', build: '1' } }
+              response = HTTParty.get('https://api.streamci.com/v1/tests/next', opts)
 
-              opts = { query: { api_key: '12345' } } # need to include other params as well
-              response = HTTParty.get('https://api.streamci.com/v1/results', opts)
-
-              # until (file_path = open(stream_ci_url).read) == '>>done<<' do
-              until response.code == 204 do
+              until response.code == 204 || response.code >= 300 do
                 # should we clear the world / example groups before each one?
                 # will that mess up reporting?
                 #
                 # does this need to be the full path or just spec/some/spec/path ?
-                load response.body
-                unless @world.example_groups.last.run(reporter)
-                  @no_failures = false
+                if response.code == 200
+                  load response.body
+                  unless @world.example_groups.last.run(reporter)
+                    @no_failures = false
+                  end
                 end
               end
 
@@ -51,12 +56,6 @@ module StreamCi
           end && !@world.non_example_failure
 
           success ? 0 : @configuration.failure_exit_code
-        end
-
-        private
-
-        def stream_ci_url
-
         end
       end
     end

@@ -5,8 +5,7 @@ namespace :stream_ci do
     namespace :rspec do
       desc 'Run and report on RSpec specs via StreamCI'
       task :run, [:rspec_args] do |_, args|
-        puts "Ran with: #{args[:rspec_args]}"
-        # StreamCi::Ruby::Rspec::Runner.run(args[:rspec_args])
+        StreamCi::Ruby::Rspec::Runner.run(args[:rspec_args])
       end
     end
   end
