@@ -23,12 +23,19 @@ module StreamCi
             fp.gsub("#{project_root}/", '')
           end
 
+          # this does not currently handle directories -- need to fix.
+          given_files_or_directories = @options.args
+
+          if given_files_or_directories
+            test_manifest = test_manifest & given_files_or_directories
+          end
+
           opts = {
             query: {
               api_key: '12345',
               branch: 'test',
               build: '1',
-              test_manifest: test_manifest & @options.args
+              test_manifest: test_manifest
             }
           }
 
