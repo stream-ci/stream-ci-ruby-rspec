@@ -13,7 +13,7 @@ module StreamCi
           @options.configure(@configuration)
 
           @configuration.output_stream.print(
-            "#\n# Preparing test manifest to send to StreamCI\n#\n"
+              "#\n# Preparing test manifest to send to StreamCI\n#\n"
           )
           t1 = Time.now
 
@@ -24,23 +24,28 @@ module StreamCi
           end
 
           # this does not currently handle directories -- need to fix.
-          given_files_or_directories = @options.args
+          given_files_or_directories = if @options.args.any?
+                                         @options.args.first.split(" ")
+                                       else
+                                         []
+                                       end
 
-          if given_files_or_directories
+          if given_files_or_directories.any?
             test_manifest = test_manifest & given_files_or_directories
           end
 
           opts = {
-            query: {
-              api_key: '12345',
-              branch: 'test',
-              build: '1',
-              test_manifest: test_manifest
-            }
+              query: {
+                  api_key: '12345',
+                  branch: 'test',
+                  build: '1',
+                  test_manifest: test_manifest
+              }
           }
 
-          stream_ci_url = ENV['STREAM_CI_URL'] || 'https://api.streamci.com'
-          HTTParty.post("#{stream_ci_url}/v1/tests", opts)
+          base_url = "http://#{ENV['STREAM_CI_URL']}" || 'https://api.streamci.com'
+          full_url = "#{base_url}/v1/tests"
+          HTTParty.post(full_url, opts)
 
           t2 = Time.now
           @configuration.output_stream.print "#\n# Test manifest sent to StreamCI - (#{((t2 - t1) * 1000).round} ms)\n#\n"
@@ -63,19 +68,15 @@ module StreamCi
               @no_failures = true
 
               opts = { query: { api_key: '12345', branch: 'test', build: '1' } }
-              stream_ci_url = ENV['STREAM_CI_URL'] || 'https://api.streamci.com'
-              response = HTTParty.get("#{stream_ci_url}/v1/tests/next", opts)
+              base_url = "http://#{ENV['STREAM_CI_URL']}" || 'https://api.streamci.com'
+              full_url = "#{base_url}/v1/tests/next"
 
-              binding.pry
-              until response.code == 204 || response.code >= 300 do
+              until ((response = HTTParty.get(full_url, opts)) && (response.code == 204 || response.code >= 300)) do
                 # should we clear the world / example groups before each one?
                 # will that mess up reporting?
                 #
                 # does this need to be the full path or just spec/some/spec/path ?
-                binding.pry
                 if response.code == 200
-                  puts "Running #{response.body}"
-                  binding.pry
                   load JSON.parse(response.body)['test']
                   unless @world.example_groups.last.run(reporter)
                     @no_failures = false
