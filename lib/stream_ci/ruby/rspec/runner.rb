@@ -13,7 +13,7 @@ module StreamCi
           @options.configure(@configuration)
 
           @configuration.output_stream.print(
-              "#\n# Preparing test manifest to send to StreamCI\n#\n"
+            "#\n# Preparing test manifest to send to StreamCI\n#\n"
           )
           t1 = Time.now
 
@@ -35,12 +35,12 @@ module StreamCi
           end
 
           opts = {
-              query: {
-                  api_key: '12345',
-                  branch: 'test',
-                  build: '1',
-                  test_manifest: test_manifest
-              }
+            query: {
+              api_key: '12345',
+              branch: 'test',
+              build: '1',
+              test_manifest: test_manifest
+            }
           }
 
           base_url = "http://#{ENV['STREAM_CI_URL']}" || 'https://api.streamci.com'
@@ -78,6 +78,10 @@ module StreamCi
                 # does this need to be the full path or just spec/some/spec/path ?
                 if response.code == 200
                   load JSON.parse(response.body)['test']
+
+                  RSpec.configuration.files_or_directories_to_run = [JSON.parse(response.body)['test']]
+                  RSpec.configuration.load_spec_files
+
                   unless @world.example_groups.last.run(reporter)
                     @no_failures = false
                   end

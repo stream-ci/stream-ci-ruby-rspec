@@ -15,6 +15,10 @@ And then execute:
 Or install it yourself as:
 
     $ gem install stream-ci-ruby-rspec
+    
+Need to set
+1. rails root dir
+2. STREAM_CI_URL (i.e. localhost:3000) 
 
 ## Usage
 

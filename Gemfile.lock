@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    stream-ci-ruby-rspec (0.10.0)
+    stream-ci-ruby-rspec (0.11.0)
       httparty (~> 0.16.2)
       rake (~> 12.3, >= 12.3.1)
       rspec (~> 3.7)
