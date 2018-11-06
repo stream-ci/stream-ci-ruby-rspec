@@ -17,8 +17,19 @@ module StreamCi
           )
           t1 = Time.now
 
-          project_root = Rails.root.to_s # this needs to be setup via a config option, as non-rails apps might use this
-          spec_root = '/spec' # pull from rspec config?
+          # set manifest based on args files/directories or default test directory/directories
+
+          binding.pry
+          # targets =
+
+          # OLD Setup
+
+          # this needs to be setup via a config option, as non-rails apps might use this
+          project_root = Rails.root.to_s
+
+          # pull from rspec config?
+          spec_root = '/spec'
+
           test_manifest = Dir["#{project_root}#{spec_root}/**/*_spec.rb"].map do |fp|
             fp.gsub("#{project_root}/", '')
           end
@@ -33,6 +44,8 @@ module StreamCi
           if given_files_or_directories.any?
             test_manifest = test_manifest & given_files_or_directories
           end
+
+          # OLD Setup - end
 
           opts = {
             query: {
