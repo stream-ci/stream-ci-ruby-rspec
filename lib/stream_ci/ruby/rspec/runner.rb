@@ -1,5 +1,6 @@
 require 'rspec/core'
 require 'httparty'
+require 'pry'
 
 module StreamCi
   module Ruby
@@ -15,12 +16,17 @@ module StreamCi
 
               @no_failures = true
 
+              # todo set these up in an initializer or config file?
               opts = { query: { api_key: '12345', branch: 'test', build: '1' } }
               base_url = "http://#{ENV['STREAM_CI_URL']}" || 'https://api.streamci.com'
               full_url = "#{base_url}/v1/tests/next"
 
-              # todo need to update the api to emit these codes
-              until ((response = HTTParty.get(full_url, opts)) && (response.code == 204 || response.code >= 300)) do
+              # todo add better handling when a response code is 400 or greater, i.e. something went wrong
+
+              #
+              # HTTP Code 410 => Gone (i.e. there are no more tests to run, stop looking)
+              #
+              until ((response = HTTParty.get(full_url, opts)) && response.code >= 400) do
                 # should we clear the world / example groups before each one?
                 # will that mess up reporting?
                 #
